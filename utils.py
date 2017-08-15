@@ -5,6 +5,31 @@
 import scipy.io
 import struct
 import numpy as np
+import time
+
+class Timer(object):
+    """A simple timer."""
+    def __init__(self):
+        self.total_time = 0.
+        self.calls = 0
+        self.start_time = 0.
+        self.diff = 0.
+        self.average_time = 0.
+
+    def tic(self):
+        # using time.time instead of time.clock because time time.clock
+        # does not normalize for multithreading
+        self.start_time = time.time()
+
+    def toc(self, average=True):
+        self.diff = time.time() - self.start_time
+        self.total_time += self.diff
+        self.calls += 1
+        self.average_time = self.total_time / self.calls
+        if average:
+            return self.average_time
+        else:
+            return self.diff
 
 def pascal_classes():
   classes = {'aeroplane' : 1,  'bicycle'   : 2,  'bird'        : 3,  'boat'         : 4,
@@ -17,8 +42,10 @@ def pascal_classes():
 
 def pascal_palette():
   palette = {(  0,   0,   0) : 0 ,
-             (128,   0,   0) : 1 ,
-             (  0, 128,   0) : 2 ,
+#             (128,   0,   0) : 1 ,
+#             (  0, 128,   0) : 2 ,
+             (  1,   1,   1) : 1 ,
+             (  2,   2,   2) : 2 ,
              (128, 128,   0) : 3 ,
              (  0,   0, 128) : 4 ,
              (128,   0, 128) : 5 ,

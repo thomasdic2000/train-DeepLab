@@ -40,6 +40,7 @@ class Segmenter(caffe.Net):
     out = self.forward()
 
     predictions = out[self.outputs[0]] # the output layer should be called crf_inf
-    segm_result = predictions[0].argmax(axis=0).astype(np.uint8)
+    #segm_result = predictions[0].argmax(axis=0).astype(np.uint8)
+    #return segm_result 
 
-    return segm_result 
+    return predictions[0]

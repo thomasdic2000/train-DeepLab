@@ -27,7 +27,8 @@ layers {
     root_folder: "${DATA_ROOT}"
     source: "${EXP}/list${LIST_SUFFIX}/${TRAIN_SET}.txt"
     label_type: PIXEL
-    batch_size: 30
+    batch_size: 10
+#    batch_size: 30
     shuffle: true
   }
   transform_param {

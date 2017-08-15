@@ -12,35 +12,42 @@ import numpy as np
 from PIL import Image as PILImage
 import matplotlib.pyplot as plt
 import caffe
+import cv2
 
 from utils import pascal_palette_invert, pascal_mean_values
 from segmenter import Segmenter
 
 def main():
-  img_size = 505
+  img_size = 1001 #505
   #output_path = './TMP_testTrainingSet/'# './' # './TMP_checking'
   #output_path = './TMP_test_advance_CO/'# './' # './TMP_checking'
-  output_ext  = '-label_newCRF2'
+  #output_ext  = '-label-noCRF'
+  output_ext  = '-label-5iter'
 
   gpu_id, net_path, model_path, output_path, img_paths = process_arguments(sys.argv)
   palette = pascal_palette_invert()
   net = Segmenter(net_path, model_path, gpu_id)
+  cnt = 0
 
   for img_path in img_paths:
-    print(os.path.basename(img_path).split('.')[0])
+    cnt = cnt+1
+    print(str(cnt) + ': ' + os.path.basename(img_path).split('.')[0])
 
     img, cur_h, cur_w = preprocess_image(img_path, img_size)
     segm_result = net.predict([img])
 
-#    result_img  = PILImage.fromarray(segm_result)
-#    result_name = os.path.basename(img_path).split('.')[0]+'-res.png'
-#    result_img.save(result_name)
+    segm_result = segm_result[0:cur_h, 0:cur_w]
 
-    segm_post = postprocess_segmentation(segm_result, cur_h, cur_w, palette)    
+    if np.any(segm_result): 
+      result_img  = PILImage.fromarray(segm_result)
+      result_name = output_path + os.path.basename(img_path).split('.')[0]+'-res.png'
+      result_img.save(result_name)
 
-    concatenate = True
-    segm_name = output_path + os.path.basename(img_path).split('.')[0]+output_ext+'.png'
-    save_result(segm_post, segm_name, concatenate, img_path)
+      segm_post = postprocess_segmentation(segm_result, cur_h, cur_w, palette)    
+
+      concatenate = True
+      segm_name = output_path + os.path.basename(img_path).split('.')[0]+output_ext+'.png'
+      save_result(segm_post, segm_name, concatenate, img_path)
 
 def preprocess_image(img_path, img_size):
   if not os.path.exists(img_path):
